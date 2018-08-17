@@ -1,0 +1,35 @@
+{
+  "name": "gatsby-plugin-sri",
+  "version": "0.0.1",
+  "description": "Gatsby plugin for enabling Subresource Integrity (SRI)",
+  "main": "index.js",
+  "scripts": {
+    "lint": "standard",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "hash",
+    "integrity",
+    "sri",
+    "subresource"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ovhemert/gatsby-plugin-sri.git"
+  },
+  "author": "Osmond van Hemert <osmond@vanhemert.nu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ovhemert/gatsby-plugin-sri/issues"
+  },
+  "homepage": "https://github.com/ovhemert/gatsby-plugin-sri#readme",
+  "dependencies": {
+    "hash.js": "^1.1.5",
+    "replace-in-file": "^3.4.2"
+  },
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
+}
