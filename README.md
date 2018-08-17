@@ -11,6 +11,14 @@
 
 A Gatsby plugin to add Subresource Integrity (SRI) to your generated script tags.
 
+```html
+<script src="/webpack-runtime-cde5506958f1afc4d89e.js"></script>
+```
+becomes
+```html
+<script src="/webpack-runtime-cde5506958f1afc4d89e.js" integrity="sha512-uxm8lZAnmLGO3hMOyYy7HFgEGJgDdXwZR+Pdyt2f3AKbgVZ706v9YyI4t9veKTirqfdLGvPVDsDkHEWmWsECRA=="></script>
+```
+
 ## Installation
 
 With npm:
