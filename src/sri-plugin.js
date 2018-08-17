@@ -1,6 +1,5 @@
 'use strict'
 
-// const hash = require('hash.js')
 const crypto = require('crypto')
 const replace = require('replace-in-file')
 
@@ -8,13 +7,15 @@ let assetHashes = {}
 
 class WebpackPlugin {
   afterOptimizeAssets (assets) {
-    Object.keys(assets).filter(file => file.endsWith('.js')).forEach(file => {
-      // hash the current asset source and save the value for later use
-      const asset = assets[file]
-      const content = asset.source()
-      // const fileHash = hash.sha512().update(content).digest('base64')
-      var fileHash = crypto.createHash('sha512').update(content, 'utf-8').digest('base64')
-      assetHashes[`/${file}`] = `sha512-${fileHash}`
+    Object.keys(assets).forEach(file => {
+      if (file.endsWith('.css') || file.endsWith('.js')) {
+        // hash the current asset source and save the value for later use
+        const asset = assets[file]
+        const content = asset.source()
+        var fileHash = crypto.createHash('sha512').update(content, 'utf-8').digest('base64')
+        assetHashes[`/${file}`] = `sha512-${fileHash}`
+        // console.log(file)
+      }
     })
   }
   afterPlugins (compiler) {
@@ -34,8 +35,14 @@ function onPostBuild (args, pluginOptions) {
   let replaceTo = []
   Object.keys(assetHashes).map(file => {
     const hash = assetHashes[file]
-    replaceFrom.push(`src="${file}"`)
-    replaceTo.push(`src="${file}" integrity="${hash}"`)
+    if (file.endsWith('.css')) {
+      replaceFrom.push(`data-href="${file}"`)
+      replaceTo.push(`data-href="${file}" integrity="${hash}"`)
+    }
+    if (file.endsWith('.js')) {
+      replaceFrom.push(`src="${file}"`)
+      replaceTo.push(`src="${file}" integrity="${hash}"`)
+    }
   })
   let options = { files: 'public/*.html', from: replaceFrom, to: replaceTo }
   replace.sync(options)
