@@ -6,14 +6,18 @@ const replace = require('replace-in-file')
 let assetHashes = {}
 
 class WebpackPlugin {
+  constructor (options) {
+    this.options = options
+  }
   afterOptimizeAssets (assets) {
     Object.keys(assets).forEach(file => {
       if (file.endsWith('.css') || file.endsWith('.js')) {
         // hash the current asset source and save the value for later use
         const asset = assets[file]
         const content = asset.source()
-        var fileHash = crypto.createHash('sha512').update(content, 'utf-8').digest('base64')
-        assetHashes[`/${file}`] = `sha512-${fileHash}`
+        const hash = this.options.hash
+        var fileHash = crypto.createHash(hash).update(content, 'utf-8').digest('base64')
+        assetHashes[`/${file}`] = `${hash}-${fileHash}`
         // console.log(file)
       }
     })
