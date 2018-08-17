@@ -76,4 +76,4 @@ Want to help me out by giving a donation? Check out these options:
 
 Licensed under [MIT](./LICENSE).
 
-_NOTE: This plugin only generates output when run in `production` mode! To test your sitemap, run: `gatsby build && gatsby serve`_
+_NOTE: This plugin only generates output when run in `production` mode! To test your generated tags, run: `gatsby build && gatsby serve`_
