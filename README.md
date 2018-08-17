@@ -1,5 +1,13 @@
 # gatsby-plugin-sri
 
+[![Build Status](https://travis-ci.com/ovhemert/gatsby-plugin-sri.svg?branch=master)](https://travis-ci.com/ovhemert/gatsby-plugin-sri)
+[![Dependencies](https://img.shields.io/david/ovhemert/gatsby-plugin-sri.svg)](https://david-dm.org/ovhemert/gatsby-plugin-sri)
+[![Known Vulnerabilities](https://snyk.io/test/npm/gatsby-plugin-sri/badge.svg)](https://snyk.io/test/npm/gatsby-plugin-sri)
+[![Coverage Status](https://coveralls.io/repos/github/ovhemert/gatsby-plugin-sri/badge.svg?branch=master)](https://coveralls.io/github/ovhemert/gatsby-plugin-sri?branch=master)
+[![npm](https://img.shields.io/npm/v/gatsby-plugin-sri.svg)](https://www.npmjs.com/package/gatsby-plugin-sri)
+[![npm](https://img.shields.io/npm/dm/gatsby-plugin-sri.svg)](https://www.npmjs.com/package/gatsby-plugin-sri)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](http://standardjs.com/)
+
 A Gatsby plugin to add Subresource Integrity (SRI) to your generated script tags.
 
 ## Installation
