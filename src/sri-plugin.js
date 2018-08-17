@@ -1,6 +1,7 @@
 'use strict'
 
-const hash = require('hash.js')
+// const hash = require('hash.js')
+const crypto = require('crypto')
 const replace = require('replace-in-file')
 
 let assetHashes = {}
@@ -11,7 +12,8 @@ class WebpackPlugin {
       // hash the current asset source and save the value for later use
       const asset = assets[file]
       const content = asset.source()
-      const fileHash = hash.sha512().update(content).digest('hex')
+      // const fileHash = hash.sha512().update(content).digest('base64')
+      var fileHash = crypto.createHash('sha512').update(content, 'utf-8').digest('base64')
       assetHashes[`/${file}`] = `sha512-${fileHash}`
     })
   }
