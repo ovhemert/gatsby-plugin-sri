@@ -48,7 +48,7 @@ function onPostBuild (args, pluginOptions) {
       replaceTo.push(`src="${file}" integrity="${hash}"`)
     }
   })
-  let options = { files: 'public/*.html', from: replaceFrom, to: replaceTo }
+  let options = { files: ['public/*.html', 'public/**/*.html'], from: replaceFrom, to: replaceTo }
   replace.sync(options)
   // console.log(changes)
 }
