@@ -1,6 +1,6 @@
 {
   "name": "gatsby-plugin-sri",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Gatsby plugin for enabling Subresource Integrity (SRI)",
   "main": "index.js",
   "scripts": {
