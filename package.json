@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/ovhemert/gatsby-plugin-sri#readme",
   "dependencies": {
-    "replace-in-file": "^3.4.2"
+    "replace-in-file": "^3.4.3"
   },
   "devDependencies": {
     "standard": "^12.0.0"
