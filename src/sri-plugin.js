@@ -35,17 +35,18 @@ class WebpackPlugin {
 
 function onPostBuild (args, pluginOptions) {
   // after html files have been generated, inject integrity attribute
+  const { crossorigin } = pluginOptions;
   let replaceFrom = []
   let replaceTo = []
   Object.keys(assetHashes).map(file => {
     const hash = assetHashes[file]
     if (file.endsWith('.css')) {
       replaceFrom.push(`data-href="${file}"`)
-      replaceTo.push(`data-href="${file}" integrity="${hash}"`)
+      replaceTo.push(`data-href="${file}" integrity="${hash}" ${crossorigin ? 'crossorigin="anonymous"' : ''}`)
     }
     if (file.endsWith('.js')) {
       replaceFrom.push(`src="${file}"`)
-      replaceTo.push(`src="${file}" integrity="${hash}"`)
+      replaceTo.push(`src="${file}" integrity="${hash}" ${crossorigin ? 'crossorigin="anonymous"' : ''}`)
     }
   })
   let options = { files: ['public/*.html', 'public/**/*.html'], from: replaceFrom, to: replaceTo }
