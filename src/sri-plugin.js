@@ -3,12 +3,13 @@
 const crypto = require('crypto')
 const replace = require('replace-in-file')
 
-let assetHashes = {}
+const assetHashes = {}
 
 class WebpackPlugin {
   constructor (options) {
     this.options = options
   }
+
   afterOptimizeAssets (assets) {
     Object.keys(assets).forEach(file => {
       if (file.endsWith('.css') || file.endsWith('.js')) {
@@ -22,12 +23,15 @@ class WebpackPlugin {
       }
     })
   }
+
   afterPlugins (compiler) {
     compiler.hooks.thisCompilation.tap('PluginSRI', this.thisCompilation.bind(this))
   }
+
   apply (compiler) {
     compiler.hooks.afterPlugins.tap('PluginSRI', this.afterPlugins.bind(this))
   }
+
   thisCompilation (compilation) {
     compilation.hooks.afterOptimizeAssets.tap('PluginSRI', this.afterOptimizeAssets.bind(this))
   }
@@ -35,8 +39,8 @@ class WebpackPlugin {
 
 function onPostBuild (args, pluginOptions) {
   // after html files have been generated, inject integrity attribute
-  let replaceFrom = []
-  let replaceTo = []
+  const replaceFrom = []
+  const replaceTo = []
   Object.keys(assetHashes).map(file => {
     const hash = assetHashes[file]
     if (file.endsWith('.css')) {
@@ -48,7 +52,7 @@ function onPostBuild (args, pluginOptions) {
       replaceTo.push(`src="${file}" integrity="${hash}"`)
     }
   })
-  let options = { files: ['public/*.html', 'public/**/*.html'], from: replaceFrom, to: replaceTo }
+  const options = { files: ['public/*.html', 'public/**/*.html'], from: replaceFrom, to: replaceTo }
   replace.sync(options)
   // console.log(changes)
 }
