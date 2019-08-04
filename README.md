@@ -1,7 +1,6 @@
 # gatsby-plugin-sri
 
 [![Travis](https://img.shields.io/travis/com/ovhemert/gatsby-plugin-sri.svg?branch=master&logo=travis)](https://travis-ci.com/ovhemert/gatsby-plugin-sri)
-[![AppVeyor](https://img.shields.io/appveyor/ci/ovhemert/gatsby-plugin-sri.svg?logo=appveyor)](https://ci.appveyor.com/project/ovhemert/gatsby-plugin-sri)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3216215565884e7d9f4d5f298a0288a8)](https://www.codacy.com/app/ovhemert/gatsby-plugin-sri?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ovhemert/gatsby-plugin-sri&amp;utm_campaign=Badge_Grade)
 [![Known Vulnerabilities](https://snyk.io/test/npm/gatsby-plugin-sri/badge.svg)](https://snyk.io/test/npm/gatsby-plugin-sri)
 [![Greenkeeper badge](https://badges.greenkeeper.io/ovhemert/gatsby-plugin-sri.svg)](https://greenkeeper.io/)
