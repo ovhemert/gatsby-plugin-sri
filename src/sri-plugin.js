@@ -35,7 +35,7 @@ class WebpackPlugin {
 
 function onPostBuild (args, pluginOptions) {
   // after html files have been generated, inject integrity attribute
-  const { crossorigin } = pluginOptions;
+  const { crossorigin } = pluginOptions
   let replaceFrom = []
   let replaceTo = []
   Object.keys(assetHashes).map(file => {

@@ -3,7 +3,7 @@
 const defaultOptions = {
   hash: 'sha512',
   extensions: ['css', 'js'],
-  crossorigin: true
+  crossorigin: false
 }
 
 const PluginSRI = require('./src/sri-plugin')

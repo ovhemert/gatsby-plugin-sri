@@ -42,12 +42,14 @@ module.exports = {
       resolve: 'gatsby-plugin-sri',
       options: {
         hash: 'sha512', // 'sha256', 'sha384' or 'sha512' ('sha512' = default)
-        crossorigin: true // Optional
+        crossorigin: false // Optional
       }
     }
   ]
 }
 ```
+
+The `crossorigin` option, if set to `true`, will optionally add add a `crossorigin="anonymous"` attribute to the script / style tags.
 
 ## Maintainers
 
