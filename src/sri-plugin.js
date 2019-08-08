@@ -1,62 +1,44 @@
 'use strict'
 
 const crypto = require('crypto')
+const fs = require('fs')
+const glob = require('glob')
+const path = require('path')
 const replace = require('replace-in-file')
+const util = require('util')
 
-const assetHashes = {}
-
-class WebpackPlugin {
-  constructor (options) {
-    this.options = options
-  }
-
-  afterOptimizeAssets (assets) {
-    Object.keys(assets).forEach(file => {
-      if (file.endsWith('.css') || file.endsWith('.js')) {
-        // hash the current asset source and save the value for later use
-        const asset = assets[file]
-        const content = asset.source()
-        const hash = this.options.hash
-        var fileHash = crypto.createHash(hash).update(content, 'utf-8').digest('base64')
-        assetHashes[`/${file}`] = `${hash}-${fileHash}`
-        // console.log(file)
-      }
-    })
-  }
-
-  afterPlugins (compiler) {
-    compiler.hooks.thisCompilation.tap('PluginSRI', this.thisCompilation.bind(this))
-  }
-
-  apply (compiler) {
-    compiler.hooks.afterPlugins.tap('PluginSRI', this.afterPlugins.bind(this))
-  }
-
-  thisCompilation (compilation) {
-    compilation.hooks.afterOptimizeAssets.tap('PluginSRI', this.afterOptimizeAssets.bind(this))
-  }
+const defaultOptions = {
+  hash: 'sha512',
+  extensions: ['css', 'js'],
+  crossorigin: false
 }
 
-function onPostBuild (args, pluginOptions) {
-  // after html files have been generated, inject integrity attribute
-  const { crossorigin } = pluginOptions
-  const replaceFrom = []
-  const replaceTo = []
-  Object.keys(assetHashes).map(file => {
-    const hash = assetHashes[file]
-    if (file.endsWith('.css')) {
-      replaceFrom.push(`data-href="${file}"`)
-      replaceTo.push(`data-href="${file}" integrity="${hash}" ${crossorigin ? 'crossorigin="anonymous"' : ''}`)
-    }
-    if (file.endsWith('.js')) {
-      replaceFrom.push(`src="${file}"`)
-      replaceTo.push(`src="${file}" integrity="${hash}" ${crossorigin ? 'crossorigin="anonymous"' : ''}`)
-    }
-  })
-  const options = { files: ['public/*.html', 'public/**/*.html'], from: replaceFrom, to: replaceTo }
-  replace.sync(options)
-  // console.log(changes)
+const globAsync = util.promisify(glob)
+
+async function onPostBuild (args, pluginOptions) {
+  const options = { ...defaultOptions, ...pluginOptions }
+  const fileBasePath = path.join(process.cwd(), 'public')
+  const patternExt = (options.extensions.length > 1) ? `{${options.extensions.join(',')}}` : options.extensions[0]
+  const pattern = `**/*.${patternExt}`
+
+  const assets = await globAsync(pattern, { cwd: fileBasePath, nodir: true })
+  const assetHashes = assets.reduce((prev, curr) => {
+    const content = fs.readFileSync(path.join(fileBasePath, curr), 'utf8')
+    const assetHash = crypto.createHash(options.hash).update(content, 'utf-8').digest('base64')
+    prev[`/${curr}`] = `${options.hash}-${assetHash}`
+    return prev
+  }, {})
+
+  const replaceOptions = Object.keys(assetHashes).reduce((prev, curr) => {
+    const hash = assetHashes[curr]
+    const crossorigin = (options.crossorigin) ? ' crossorigin="anonymous"' : ''
+    const addition = `integrity="${hash}"${crossorigin}`
+    if (curr.endsWith('.css')) { prev.from.push(`data-href="${curr}"`); prev.to.push(`data-href="${curr}" ${addition}`) }
+    if (curr.endsWith('.js')) { prev.from.push(`src="${curr}"`); prev.to.push(`src="${curr}" ${addition}`) }
+    return prev
+  }, { files: ['public/**/*.html'], from: [], to: [] })
+
+  replace.sync(replaceOptions)
 }
 
-module.exports.WebpackPlugin = WebpackPlugin
-module.exports.onPostBuild = onPostBuild
+exports.onPostBuild = onPostBuild
