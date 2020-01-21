@@ -35,11 +35,11 @@ async function onPostBuild (args, pluginOptions) {
     const addition = `integrity="${hash}"${crossorigin}`
     if (curr.endsWith('.css')) { prev.from.push(`data-href="${curr}"`); prev.to.push(`data-href="${curr}" ${addition}`) }
     if (curr.endsWith('.js')) {
-      prev.from.push(`src="${curr}"`);
-      prev.to.push(`src="${curr}" ${addition}`);
+      prev.from.push(`src="${curr}"`)
+      prev.to.push(`src="${curr}" ${addition}`)
 
-      prev.from.push(`href="${curr}"`);
-      prev.to.push(`href="${curr}" ${addition}`);
+      prev.from.push(`href="${curr}"`)
+      prev.to.push(`href="${curr}" ${addition}`)
     }
     return prev
   }, { files: ['public/**/*.html'], from: [], to: [] })
