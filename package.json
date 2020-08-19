@@ -25,11 +25,10 @@
     "url": "https://github.com/ovhemert/gatsby-plugin-sri/issues"
   },
   "homepage": "https://github.com/ovhemert/gatsby-plugin-sri#readme",
-  "dependencies": {
-    "glob": "^7.1.6",
-    "replace-in-file": "^5.0.2"
-  },
   "devDependencies": {
     "standard": "^14.3.3"
+  },
+  "peerDependencies": {
+    "react": "*"
   }
 }

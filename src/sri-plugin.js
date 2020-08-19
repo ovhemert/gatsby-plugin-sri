@@ -1,50 +1,98 @@
 'use strict'
 
-const crypto = require('crypto')
 const fs = require('fs')
-const glob = require('glob')
 const path = require('path')
-const replace = require('replace-in-file')
-const util = require('util')
+const crypto = require('crypto')
+const React = require('react')
 
 const defaultOptions = {
   hash: 'sha512',
-  extensions: ['css', 'js'],
   crossorigin: false
 }
 
-const globAsync = util.promisify(glob)
+const hashes = new Map()
 
-async function onPostBuild (args, pluginOptions) {
-  const options = { ...defaultOptions, ...pluginOptions }
-  const fileBasePath = path.join(process.cwd(), 'public')
-  const patternExt = (options.extensions.length > 1) ? `{${options.extensions.join(',')}}` : options.extensions[0]
-  const pattern = `**/*.${patternExt}`
+function getFileHash (fileName, algorithm) {
+  const value = hashes.get(fileName)
 
-  const assets = await globAsync(pattern, { cwd: fileBasePath, nodir: true })
-  const assetHashes = assets.reduce((prev, curr) => {
-    const content = fs.readFileSync(path.join(fileBasePath, curr), 'utf8')
-    const assetHash = crypto.createHash(options.hash).update(content, 'utf-8').digest('base64')
-    prev[`/${curr}`] = `${options.hash}-${assetHash}`
-    return prev
-  }, {})
+  if (value !== undefined) {
+    return value
+  }
 
-  const replaceOptions = Object.keys(assetHashes).reduce((prev, curr) => {
-    const hash = assetHashes[curr]
-    const crossorigin = (options.crossorigin) ? ' crossorigin="anonymous"' : ''
-    const addition = `integrity="${hash}"${crossorigin}`
-    if (curr.endsWith('.css')) { prev.from.push(`data-href="${curr}"`); prev.to.push(`data-href="${curr}" ${addition}`) }
-    if (curr.endsWith('.js')) {
-      prev.from.push(`src="${curr}"`)
-      prev.to.push(`src="${curr}" ${addition}`)
+  const filePath = path.resolve(path.join('public', fileName))
 
-      prev.from.push(`href="${curr}"`)
-      prev.to.push(`href="${curr}" ${addition}`)
-    }
-    return prev
-  }, { files: ['public/**/*.html'], from: [], to: [] })
+  if (!fs.existsSync(filePath)) {
+    return ''
+  }
 
-  replace.sync(replaceOptions)
+  const hash = crypto
+    .createHash(algorithm)
+    .update(fs.readFileSync(filePath))
+    .digest('base64')
+
+  hashes.set(fileName, hash)
+
+  return hash
 }
 
-exports.onPostBuild = onPostBuild
+function visitor (elem, options) {
+  let fileName = ''
+
+  switch (elem.type) {
+    case 'script': {
+      fileName = elem.props.src
+      break
+    }
+
+    case 'style': {
+      fileName = elem.props['data-href']
+      break
+    }
+
+    case 'link': {
+      fileName = elem.props.href
+      break
+    }
+
+    default:
+      break
+  }
+
+  if (fileName) {
+    const hash = getFileHash(fileName, options.hash)
+
+    if (hash) {
+      elem.props.integrity = `${options.hash}-${hash}`
+
+      if (options.crossorigin) {
+        elem.props.crossOrigin = 'anonymous'
+      }
+    }
+  }
+}
+
+function htmlTreeTraversal (children, visitor, options) {
+  React.Children.forEach(children, function forEach (elem) {
+    if (
+      (elem.type === 'script' && elem.props.src) ||
+      (elem.type === 'style' && elem.props['data-href']) ||
+      (elem.type === 'link' && elem.props.href && elem.props.href.endsWith('.js'))
+    ) {
+      visitor(elem, options)
+    } else if (elem.props !== undefined && elem.props.children) {
+      htmlTreeTraversal(elem.props.children, visitor, options)
+    }
+  })
+}
+
+function onPreRenderHTML (args, pluginOptions) {
+  const options = { ...defaultOptions, ...pluginOptions }
+
+  htmlTreeTraversal(args.getHeadComponents(), visitor, options)
+
+  htmlTreeTraversal(args.getPreBodyComponents(), visitor, options)
+
+  htmlTreeTraversal(args.getPostBodyComponents(), visitor, options)
+}
+
+exports.onPreRenderHTML = onPreRenderHTML
