@@ -10,7 +10,8 @@ const util = require('util')
 const defaultOptions = {
   hash: 'sha512',
   extensions: ['css', 'js'],
-  crossorigin: false
+  crossorigin: false,
+  pathPrefix: ''
 }
 
 const globAsync = util.promisify(glob)
@@ -25,7 +26,7 @@ async function onPostBuild (args, pluginOptions) {
   const assetHashes = assets.reduce((prev, curr) => {
     const content = fs.readFileSync(path.join(fileBasePath, curr), 'utf8')
     const assetHash = crypto.createHash(options.hash).update(content, 'utf-8').digest('base64')
-    prev[`/${curr}`] = `${options.hash}-${assetHash}`
+    prev[`${options.pathPrefix}/${curr}`] = `${options.hash}-${assetHash}`
     return prev
   }, {})
 
