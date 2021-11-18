@@ -10,7 +10,8 @@ const util = require('util')
 const defaultOptions = {
   hash: 'sha512',
   extensions: ['css', 'js'],
-  crossorigin: false
+  crossorigin: false,
+  assetPrefix: ''
 }
 
 const globAsync = util.promisify(glob)
@@ -31,15 +32,19 @@ async function onPostBuild (args, pluginOptions) {
 
   const replaceOptions = Object.keys(assetHashes).reduce((prev, curr) => {
     const hash = assetHashes[curr]
+    const assetPrefix = options.assetPrefix.replace(/\/$/, '')
     const crossorigin = (options.crossorigin) ? ' crossorigin="anonymous"' : ''
     const addition = `integrity="${hash}"${crossorigin}`
-    if (curr.endsWith('.css')) { prev.from.push(`data-href="${curr}"`); prev.to.push(`data-href="${curr}" ${addition}`) }
+    if (curr.endsWith('.css')) { 
+      prev.from.push(`data-href="${assetPrefix}${curr}"`)
+      prev.to.push(`data-href="${assetPrefix}${curr}" ${addition}`) 
+    }
     if (curr.endsWith('.js')) {
-      prev.from.push(`src="${curr}"`)
-      prev.to.push(`src="${curr}" ${addition}`)
+      prev.from.push(`src="${assetPrefix}${curr}"`)
+      prev.to.push(`src="${assetPrefix}${curr}" ${addition}`)
 
-      prev.from.push(`href="${curr}"`)
-      prev.to.push(`href="${curr}" ${addition}`)
+      prev.from.push(`href="${assetPrefix}${curr}"`)
+      prev.to.push(`href="${assetPrefix}${curr}" ${addition}`)
     }
     return prev
   }, { files: ['public/**/*.html'], from: [], to: [] })
