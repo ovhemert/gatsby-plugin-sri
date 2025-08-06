@@ -30,6 +30,6 @@
     "replace-in-file": "^6.3.3"
   },
   "devDependencies": {
-    "standard": "^14.3.3"
+    "standard": "^17.1.2"
   }
 }
